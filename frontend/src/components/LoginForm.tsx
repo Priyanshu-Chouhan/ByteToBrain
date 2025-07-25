@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
@@ -62,6 +63,41 @@ const LoginForm: React.FC = () => {
     }
   };
 
+  const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
+    try {
+      setLoading(true);
+      setMessage(null);
+      setError(null);
+
+      // Send the credential to your backend for verification
+      const res = await fetch(`${BACKEND_URL}/api/auth/google/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Google login failed');
+
+      setMessage('Google login successful!');
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      if (data.user && login) {
+        login(data.user);
+        router.push('/');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLoginError = () => {
+    setError('Google login failed. Please try again.');
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto bg-[#18181b] p-8 rounded-2xl shadow-2xl border border-[#232326]">
       <h2 className="text-2xl font-bold mb-2 text-center text-white">Login</h2>
@@ -88,36 +124,19 @@ const LoginForm: React.FC = () => {
         <a href="/forgot-password" className="text-[#2997FF] hover:underline">Forgot Password?</a>
       </div>
       <button type="submit" className="bg-[#2997FF] text-white py-2 rounded-full font-semibold hover:bg-[#0071E3] transition" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+      
       {/* Google Login Button */}
-      <button
-        type="button"
-        className="flex items-center justify-center gap-2 border border-gray-300 rounded-full py-2 bg-white text-gray-800 hover:bg-gray-100 transition font-medium shadow"
-        style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
-        onClick={() => alert('Google login coming soon!')}
-      >
-        <img src="/google.png" alt="Google" className="w-5 h-5" />
-        Login with Google
-      </button>
-      {/* GitHub Login Button */}
-      <button
-        type="button"
-        className="flex items-center justify-center gap-2 border border-gray-300 rounded-full py-2 bg-white text-gray-800 hover:bg-gray-100 transition font-medium shadow"
-        style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
-        onClick={() => alert('GitHub login coming soon!')}
-      >
-        <img src="/git.png" alt="GitHub" className="w-5 h-5" />
-        Login with GitHub
-      </button>
-      {/* Apple Login Button */}
-      <button
-        type="button"
-        className="flex items-center justify-center gap-2 border border-gray-300 rounded-full py-2 bg-white text-gray-800 hover:bg-gray-100 transition font-medium shadow"
-        style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
-        onClick={() => alert('Apple login coming soon!')}
-      >
-        <img src="/apple.png" alt="Apple" className="w-5 h-5" />
-        Login with Apple
-      </button>
+      <div className="w-full">
+        <GoogleLogin
+          onSuccess={handleGoogleLogin}
+          onError={handleGoogleLoginError}
+          theme="filled_blue"
+          size="large"
+          width="100%"
+          text="signin_with"
+          shape="pill"
+        />
+      </div>
       {message && <div className="text-green-500 text-center">{message}</div>}
       {error && <div className="text-red-500 text-center">{error}</div>}
     </form>

@@ -5,6 +5,7 @@ import Navbar, { WhatsAppStickyButton } from '../components/Navbar';
 import Footer from '../components/Footer';
 import NavbarProvider from '../context/NavbarContext';
 import { AuthProvider } from '../context/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,13 +35,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#121212] text-white`}
       >
-        <AuthProvider>
-          <NavbarProvider>
-            <Navbar />
-            {children}
-            <Footer />
-          </NavbarProvider>
-        </AuthProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+          <AuthProvider>
+            <NavbarProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </NavbarProvider>
+          </AuthProvider>
+        </GoogleOAuthProvider>
         <WhatsAppStickyButton />
       </body>
     </html>
