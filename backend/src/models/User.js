@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   phone: { type: String },
   reference: { type: String },
   avatar: { type: String, default: 'profile.png' },
+  googleId: { type: String },
 });
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
