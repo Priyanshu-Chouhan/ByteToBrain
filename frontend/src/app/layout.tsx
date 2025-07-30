@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar, { WhatsAppStickyButton } from '../components/ClientNavbar';
 import Footer from '../components/Footer';
+import { AuthProvider } from '../context/AuthContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +14,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 
 export default function RootLayout({
@@ -28,10 +28,12 @@ export default function RootLayout({
         <link rel="icon" type="image/png" href="/logo.png" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#121212] text-white`}>
-        <Navbar />
-        {children}
-        <Footer />
-        <WhatsAppStickyButton />
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <WhatsAppStickyButton />
+        </AuthProvider>
       </body>
     </html>
   );

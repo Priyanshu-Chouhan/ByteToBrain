@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/User'); // Adjust path if needed
+const User = require('../models/User');
+const Profile = require('../models/Profile');
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
@@ -20,6 +21,16 @@ passport.use(new GoogleStrategy({
           email: profile.emails[0].value,
           password: 'google-oauth'
         });
+        
+        // Create profile for Google user
+        const profileDoc = new Profile({
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          password: 'google-oauth',
+          avatar: 'profile.png',
+        });
+        await profileDoc.save();
       } else if (!user.googleId) {
         user.googleId = profile.id;
         await user.save();

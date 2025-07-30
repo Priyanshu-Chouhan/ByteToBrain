@@ -63,7 +63,7 @@ const ContactForm: React.FC = () => {
       {success && <div className="text-green-400 text-center">Thank you! Your message has been sent. We usually reply within 1 hour.</div>}
       <div className="text-xs text-gray-400 text-center mt-2">Your info is safe with us. We never share your details.</div>
       <div className="flex justify-center gap-4 mt-4">
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=rachanasen1999@gmail.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-400 hover:underline">
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@bytetobrain.in" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-400 hover:underline">
           <img src="/gmail.png" alt="Gmail" className="w-6 h-6" /> Email Us
         </a>
         <a href="https://wa.me/918269028823" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-green-400 hover:underline">

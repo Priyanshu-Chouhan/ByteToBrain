@@ -248,10 +248,10 @@ export default function HomeClient() {
                 className="flex flex-col items-center text-center h-full bg-[#18181b] rounded-xl hover:bg-[#1e293b] active:bg-[#18181b] transition-colors cursor-pointer py-3 px-3"
                 style={{ boxShadow: 'none', border: 'none' }}
               >
-                <div className="h-12 flex items-center justify-center mb-1">{s.icon}</div>
+                <div className="h-12 flex items-center justify-center mb-3">{s.icon}</div>
                 <div className="flex-1 flex flex-col justify-between w-full px-1">
                   <div>
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-1 leading-tight">{s.title}</h3>
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-2 leading-tight">{s.title}</h3>
                     <p className="text-xs sm:text-sm text-[#A1A1A6] mb-1 leading-relaxed">{s.desc}</p>
                   </div>
                   <ul className="text-xs text-[#2997FF] space-y-1 mb-1">
@@ -307,8 +307,8 @@ export default function HomeClient() {
               style={{ boxShadow: "0 8px 32px 0 rgba(41,151,255,0.10)" }}
             >
               <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r ${card.color} rounded-full group-hover:w-24 transition-all duration-300`} />
-              <span className="group-hover:animate-bounce transition-all duration-200">{card.icon}</span>
-              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-2">{card.title}</h3>
+              <span className="group-hover:animate-bounce transition-all duration-200 mb-3">{card.icon}</span>
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-3">{card.title}</h3>
               <p className="text-xs sm:text-sm text-[#A1A1A6] flex-1 flex items-center">{card.desc}</p>
             </motion.div>
           ))}

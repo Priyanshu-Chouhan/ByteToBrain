@@ -7,6 +7,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 require('./auth/google');
+const Profile = require('./models/Profile');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -39,13 +40,27 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
-  (req, res) => {
+  async (req, res) => {
     const user = req.user;
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
+    
+    // Get or create profile
+    let profile = await Profile.findOne({ userId: user._id });
+    if (!profile) {
+      profile = new Profile({
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        password: 'google-oauth',
+        avatar: 'profile.png',
+      });
+      await profile.save();
+    }
+    
     res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
   }
 );

@@ -9,7 +9,7 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'defaultsecret');
     req.user = decoded;
-    req.userId = decoded.userId; // Add this line to set userId for Multer and other uses
+    req.userId = decoded.userId || decoded.id;
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });

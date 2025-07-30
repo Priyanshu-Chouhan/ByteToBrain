@@ -49,7 +49,22 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET || 'defaultsecret',
       { expiresIn: '7d' }
     );
-    res.json({ message: 'Login successful', token, user: { name: user.name, email: user.email, phone: user.phone, reference: user.reference, avatar: user.avatar } });
+    
+    // Get profile data
+    const profile = await Profile.findOne({ userId: user._id });
+    const userData = {
+      name: profile?.name || user.name,
+      email: profile?.email || user.email,
+      phone: profile?.phone || user.phone,
+      reference: profile?.reference || user.reference,
+      avatar: profile?.avatar || user.avatar
+    };
+    
+    res.json({ 
+      message: 'Login successful', 
+      token, 
+      user: userData 
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

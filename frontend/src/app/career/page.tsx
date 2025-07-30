@@ -20,7 +20,7 @@ export default function Career() {
         "Experience with RESTful APIs",
         "Knowledge of Git version control"
       ],
-      image: "/programming.png"
+      image: "/mern.webp"
     },
     {
       id: 2,
@@ -122,7 +122,7 @@ export default function Career() {
         "Knowledge of database design and SQL",
         "Understanding of microservices architecture"
       ],
-      image: "/programming.png"
+      image: "/java.png"
     },
     {
       id: 8,
@@ -156,7 +156,7 @@ export default function Career() {
         "Knowledge of CI/CD pipelines",
         "Strong Linux administration skills"
       ],
-      image: "/cloud.png"
+      image: "/devops.png"
     }
   ];
 
@@ -229,21 +229,17 @@ export default function Career() {
                 </ul>
               </div>
 
-              <button className="w-full mt-auto px-6 py-2 bg-gradient-to-r from-[#2997FF] via-[#A259FF] to-[#FF6F91] text-white rounded-full font-semibold shadow hover:scale-105 transition text-sm">
+              <a 
+                href={`/job-details/${job.id}`}
+                className="w-full mt-auto block text-center px-6 py-2 bg-gradient-to-r from-[#2997FF] via-[#A259FF] to-[#FF6F91] text-white rounded-full font-semibold shadow hover:scale-105 transition text-sm"
+              >
                 Learn More & Apply
-              </button>
+              </a>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-[#C7C7CC] mb-4">
-            Don't see a position that fits? We're always looking for talented individuals.
-          </p>
-          <a href="/contact" className="inline-block px-8 py-3 bg-[#232326] text-white rounded-full font-semibold border border-[#2997FF] hover:bg-[#2997FF] transition">
-            Get In Touch
-          </a>
-        </div>
+
       </div>
     </div>
   );

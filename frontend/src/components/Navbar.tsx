@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useNavbarContext } from '../context/NavbarContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,18 +14,29 @@ const ChevronDown = (
 );
 
 const Navbar: React.FC = () => {
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  // const [servicesOpen, setServicesOpen] = useState(false);
-  // const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [openServices, setOpenServices] = useState(false);
   const auth = useAuth();
   const user = auth?.user;
   const logout = auth?.logout;
+  
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
+  console.log('Navbar auth:', auth);
+  console.log('Navbar user:', user);
+
+  // Add this useEffect to debug
+  useEffect(() => {
+    console.log('Navbar user changed:', user);
+  }, [user]);
+
   const [showProfile, setShowProfile] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
   const [editMode, setEditMode] = useState(false);
+  const [mobileEditMode, setMobileEditMode] = useState(false);
   const [editName, setEditName] = useState(user?.name || "");
   const [editPhone, setEditPhone] = useState(user?.phone || "");
   const [editReference, setEditReference] = useState(user?.reference || "");
@@ -39,8 +51,6 @@ const Navbar: React.FC = () => {
     setEditPhone(user?.phone || "");
     setEditReference(user?.reference || "");
   }, [user]);
-
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
   const handleSave = async () => {
     setSaveError(null);
@@ -158,6 +168,7 @@ const Navbar: React.FC = () => {
 
   const handleCancel = () => {
     setEditMode(false);
+    setMobileEditMode(false);
     setEditName(user?.name || "");
     setEditPhone(user?.phone || "");
     setEditReference(user?.reference || "");
@@ -204,8 +215,6 @@ const Navbar: React.FC = () => {
     },
   ];
 
-  console.log('Navbar avatarPreview:', avatarPreview, 'user.avatar:', user?.avatar);
-  console.log('user:', user);
 
   return (
     // <nav className="sticky top-0 z-50 bg-[#1D1D1F] shadow flex items-center justify-between px-4 py-2 w-full border-b border-[#232326]">
@@ -216,55 +225,49 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
       <div className="hidden md:flex items-center gap-2 h-full">
-        <Link href="/" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Home</Link>
-        <Link href="/about-us" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">About Us</Link>
-        <div className="relative flex items-center h-12 px-3" ref={servicesRef}>
+        <Link href="/" className={`flex items-center h-12 px-3 font-medium transition-colors duration-200 ${pathname === '/' ? 'text-[#2997FF]' : 'text-[#A1A1A6] hover:text-[#2997FF]'}`}>Home</Link>
+        <Link href="/about-us" className={`flex items-center h-12 px-3 font-medium transition-colors duration-200 ${pathname === '/about-us' ? 'text-[#2997FF]' : 'text-[#A1A1A6] hover:text-[#2997FF]'}`}>About Us</Link>
+        <div className="relative flex items-center h-12 px-3 group" ref={servicesRef}>
           <button
             className="text-[#A1A1A6] hover:text-[#2997FF] font-medium flex items-center gap-1 transition-colors duration-200 h-full"
-            onClick={() => setOpenServices(!openServices)}
             type="button"
           >
             Services {ChevronDown}
           </button>
-          {openServices && (
-            <div className="absolute left-0 mt-28 bg-[#232326] border border-[#333] rounded shadow-lg min-w-[260px] flex flex-col z-[60]">
-              {serviceCategories.map((cat, idx) => (
+          <div className="absolute left-0 mt-28 bg-[#232326] border border-[#333] rounded shadow-lg min-w-[260px] flex-col z-[60] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+            {serviceCategories.map((cat, idx) => (
+              <div
+                key={cat.key}
+                className="group/item relative"
+              >
                 <div
-                  key={cat.key}
-                  className="group relative"
+                  className="w-full text-left px-4 py-2 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] font-semibold uppercase text-xs tracking-wider flex items-center justify-between transition-colors duration-200"
                 >
-                  <button
-                    className="w-full text-left px-4 py-2 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] font-semibold uppercase text-xs tracking-wider flex items-center justify-between transition-colors duration-200"
-                    onClick={() => setActiveSubmenu(activeSubmenu === cat.key ? null : cat.key)}
-                    type="button"
-                  >
-                    {cat.label}
-                    <span className="ml-2">▶</span>
-                  </button>
-                  {/* Submenu */}
-                  <div
-                    className={`absolute left-full bg-[#232326] border border-[#333] rounded shadow-lg min-w-[220px] z-[70] transition-all duration-200 ${activeSubmenu === cat.key ? 'block' : 'hidden'}`}
-                    style={{ top: '0', marginTop: '0', maxHeight: '80vh', overflowY: 'auto' }}
-                  >
-                    {cat.services.map((service) => (
-                      <Link
-                        key={service.href}
-                        href={service.href}
-                        className="block px-4 py-2 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] rounded transition-colors duration-200"
-                        onClick={() => { setMenuOpen(false); setOpenServices(false); setActiveSubmenu(null); }}
-                      >
-                        {service.label}
-                      </Link>
-                    ))}
-                  </div>
+                  {cat.label}
+                  <span className="ml-2">▶</span>
                 </div>
-              ))}
-            </div>
-          )}
+                {/* Submenu */}
+                <div
+                  className="absolute left-full bg-[#232326] border border-[#333] rounded shadow-lg min-w-[220px] z-[70] opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible transition-all duration-200"
+                  style={{ top: '0', marginTop: '0', maxHeight: '80vh', overflowY: 'auto' }}
+                >
+                  {cat.services.map((service) => (
+                    <Link
+                      key={service.href}
+                      href={service.href}
+                      className="block px-4 py-2 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] rounded transition-colors duration-200"
+                      onClick={() => { setMenuOpen(false); setOpenServices(false); setActiveSubmenu(null); }}
+                    >
+                      {service.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <Link href="/projects" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Portfolio</Link>
-        <Link href="/testimonials" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Testimonials</Link>
-        <Link href="/career" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Career</Link>
+        <Link href="/our-work" className={`flex items-center h-12 px-3 font-medium transition-colors duration-200 ${pathname === '/our-work' ? 'text-[#2997FF]' : 'text-[#A1A1A6] hover:text-[#2997FF]'}`}>Our Work</Link>
+        <Link href="/career" className={`flex items-center h-12 px-3 font-medium transition-colors duration-200 ${pathname === '/career' || pathname.startsWith('/job-details') ? 'text-[#2997FF]' : 'text-[#A1A1A6] hover:text-[#2997FF]'}`}>Career</Link>
         {user ? (
           <>
             <div ref={avatarRef} className="relative ml-2">
@@ -379,8 +382,8 @@ const Navbar: React.FC = () => {
           </>
         ) : (
           <>
-            <Link href="/login" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Login</Link>
-            <Link href="/signup" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Sign Up</Link>
+            <Link href="/login" className={`flex items-center h-12 px-3 font-medium transition-colors duration-200 ${pathname === '/login' ? 'text-[#2997FF]' : 'text-[#A1A1A6] hover:text-[#2997FF]'}`}>Login</Link>
+            <Link href="/signup" className={`flex items-center h-12 px-3 font-medium transition-colors duration-200 ${pathname === '/signup' ? 'text-[#2997FF]' : 'text-[#A1A1A6] hover:text-[#2997FF]'}`}>Sign Up</Link>
           </>
         )}
         <Link href="/contact" className="ml-4 flex items-center h-10 px-6 py-2 bg-[#2997FF] text-white rounded-full font-semibold shadow-lg hover:bg-[#0071E3] transition-all duration-200 border border-[#2997FF] hover:border-[#0071E3]">Contact Us</Link>
@@ -405,56 +408,164 @@ const Navbar: React.FC = () => {
         <span className="text-2xl">{menuOpen ? '✕' : '☰'}</span>
       </button>
       {menuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-[#1D1D1F] shadow-lg flex flex-col gap-3 p-4 pl-8 md:hidden z-50 border-b border-[#232326]">
-          <Link href="/" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link href="/about-us" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>About Us</Link>
-          <div>
-            <button
-              className="hover:text-[#2997FF] flex items-center gap-1 w-full text-left"
-              onClick={() => setOpenServices(!openServices)}
-              type="button"
-            >
-              Services {ChevronDown}
-            </button>
-            {openServices && (
-              <div className="ml-4 mt-1 flex flex-col gap-1 bg-[#232326] border border-[#333] rounded p-2">
-                {serviceCategories.map((cat) => (
-                  <div key={cat.key} className="mb-2">
-                    <button
-                      className="w-full text-left px-2 py-1 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] font-semibold uppercase text-xs tracking-wider flex items-center justify-between transition-colors duration-200"
-                      onClick={() => setActiveSubmenu(activeSubmenu === cat.key ? null : cat.key)}
-                      type="button"
-                    >
-                      {cat.label}
-                      <span className="ml-2">▼</span>
-                    </button>
-                    {/* Submenu */}
-                    {activeSubmenu === cat.key && (
-                      <div className="ml-2 mt-1 flex flex-col gap-1">
-                        {cat.services.map((service) => (
-                          <Link
-                            key={service.href}
-                            href={service.href}
-                            className="block px-4 py-2 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] rounded transition-colors duration-200"
-                            onClick={() => { setMenuOpen(false); setOpenServices(false); setActiveSubmenu(null); }}
-                          >
-                            {service.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+        <div 
+          className="absolute top-full left-0 w-full bg-[#18181b] border-t border-[#232326] md:hidden z-40"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex flex-col p-4 gap-2 text-[#A1A1A6]">
+            <Link href="/" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link href="/about-us" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>About Us</Link>
+            
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenServices(!openServices);
+                }}
+                className="flex items-center justify-between w-full hover:text-[#2997FF] py-1"
+              >
+                Services
+                <svg className={`w-4 h-4 transition-transform ${openServices ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openServices && (
+                <div className="ml-4 mt-2 bg-[#232326] border border-[#333] rounded p-2">
+                  <Link href="/services/web-development" className="block px-3 py-2 text-[#A1A1A6] hover:text-[#2997FF] text-sm" onClick={() => { setMenuOpen(false); setOpenServices(false); }}>Web & Mobile Development</Link>
+                  <Link href="/services/uiux-branding" className="block px-3 py-2 text-[#A1A1A6] hover:text-[#2997FF] text-sm" onClick={() => { setMenuOpen(false); setOpenServices(false); }}>UI/UX & Branding</Link>
+                  <Link href="/services/cloud-marketing" className="block px-3 py-2 text-[#A1A1A6] hover:text-[#2997FF] text-sm" onClick={() => { setMenuOpen(false); setOpenServices(false); }}>Cloud, DevOps & Digital Marketing</Link>
+                </div>
+              )}
+            </div>
+            
+            <Link href="/our-work" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Our Work</Link>
+            <Link href="/career" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Career</Link>
+            
+            {/* Auth Section */}
+            <div className="border-t border-[#232326] pt-3 mt-2">
+              {user ? (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <img
+                      src={user.avatar && user.avatar !== 'profile.png' && user.avatar !== 'null' 
+                        ? `${BACKEND_URL}/avatars/${user.avatar}` 
+                        : '/profile.png'}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full border-2 border-[#2997FF] object-cover"
+                    />
+                    <div className="flex-1">
+                      <div className="text-white font-semibold text-sm">{user.name}</div>
+                      <div className="text-xs text-[#A1A1A6] truncate">{user.email}</div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                  
+                  {/* Mobile Profile Edit Section */}
+                  {mobileEditMode ? (
+                    <div className="mb-3 space-y-2" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        className="w-full bg-[#232326] border border-[#2997FF] rounded px-3 py-2 text-white text-sm"
+                        placeholder="Full Name"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <input
+                        value={editPhone}
+                        onChange={e => setEditPhone(e.target.value)}
+                        className="w-full bg-[#232326] border border-[#2997FF] rounded px-3 py-2 text-white text-sm"
+                        placeholder="Phone Number"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <input
+                        value={editReference}
+                        onChange={e => setEditReference(e.target.value)}
+                        className="w-full bg-[#232326] border border-[#2997FF] rounded px-3 py-2 text-white text-sm"
+                        placeholder="Reference"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleSave();
+                            setMobileEditMode(false);
+                          }}
+                          className="flex-1 bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setMobileEditMode(false);
+                            handleCancel();
+                          }}
+                          className="flex-1 bg-gray-600 text-white py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setMobileEditMode(true);
+                        setEditMode(true);
+                      }}
+                      className="w-full bg-[#A259FF] text-white py-2 rounded-lg font-medium hover:bg-[#7c3aed] transition-colors mb-2"
+                    >
+                      Edit Profile
+                    </button>
+                  )}
+                  
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (logout) {
+                        logout();
+                      }
+                      setMenuOpen(false);
+                      setMobileEditMode(false);
+                      setEditMode(false);
+                    }}
+                    className="w-full bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    href="/login" 
+                    className="block text-center bg-[#2997FF] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#0071E3] transition-colors" 
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/signup" 
+                    className="block text-center border border-[#2997FF] text-[#2997FF] py-2 px-4 rounded-lg font-medium hover:bg-[#2997FF] hover:text-white transition-colors" 
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+            
+            <Link 
+              href="/contact" 
+              className="mt-2 text-center bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors" 
+              onClick={() => setMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
           </div>
-          {/* Removed Training dropdown in mobile menu */}
-          <Link href="/projects" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Projects</Link>
-          <Link href="/testimonials" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Testimonials</Link>
-          <Link href="/career" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Career</Link>
-          <Link href="/login" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Login</Link>
-          <Link href="/signup" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Sign Up</Link>
-          <Link href="/contact" className="mt-2 w-fit px-6 py-2 bg-[#2997FF] text-white rounded-full font-semibold shadow-lg hover:bg-[#0071E3] transition-all duration-200 border border-[#2997FF] hover:border-[#0071E3]" onClick={() => setMenuOpen(false)}>Contact Us</Link>
         </div>
       )}
     </nav>

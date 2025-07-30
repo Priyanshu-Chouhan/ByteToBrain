@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
@@ -36,6 +37,8 @@ const SignupForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<any>({});
   const router = useRouter();
+  const auth = useAuth();
+  const login = auth?.login;
 
   // Helper functions for password rules
   const hasMinLength = form.password.length >= 8;
@@ -79,6 +82,7 @@ const SignupForm: React.FC = () => {
     if (Object.keys(errs).length > 0) return;
     setLoading(true);
     try {
+      console.log('Attempting signup to:', `${BACKEND_URL}/api/users/register`);
       const res = await fetch(`${BACKEND_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -90,14 +94,47 @@ const SignupForm: React.FC = () => {
           reference: form.hear === 'Other' ? form.hearOther : form.hear,
         }),
       });
+      
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Backend server not running. Please start the backend server.');
+        }
+        try {
+          const data = await res.json();
+          setError(data.error || 'Signup failed');
+          return;
+        } catch {
+          setError('Signup failed');
+          return;
+        }
+      }
+      
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Signup failed');
-      setMessage('Signup successful! You can now log in.');
+      console.log('Signup response:', data);
+      
+      // Auto-login after successful signup
+      if (data.user && login) {
+        const userData = {
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.phone,
+          reference: data.user.reference,
+          avatar: data.user.avatar
+        };
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        login(userData);
+        setMessage('Account created successfully! Welcome!');
+        window.location.href = '/';
+        return;
+      }
+      
+      setMessage('Signup successful! Please login.');
       setForm({ name: '', email: '', phone: '', password: '', confirmPassword: '', hear: '', hearOther: '', terms: false });
-      // Redirect to login page after signup
-      router.push('/login');
     } catch (err: any) {
-      setError(err.message);
+      console.error('Signup error:', err);
+      setError(err.message || 'Network error. Please check if backend server is running.');
     } finally {
       setLoading(false);
     }

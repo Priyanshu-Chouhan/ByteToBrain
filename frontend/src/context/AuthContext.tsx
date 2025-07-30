@@ -25,10 +25,14 @@ export function useAuth() {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   const login = (userData: UserType) => {
+    console.log('AuthContext login called with:', userData);
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
+    console.log('User set in localStorage:', localStorage.getItem("user"));
+    setForceUpdate(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -36,7 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("token");
     
     if (stored) {
-      setUser(JSON.parse(stored));
+      try {
+        const userData = JSON.parse(stored);
+        setUser(userData);
+      } catch (e) {
+        console.error('Error parsing stored user data:', e);
+        localStorage.removeItem("user");
+      }
       setLoading(false);
     } else if (token) {
       // If we have token but no user, fetch profile
@@ -47,7 +57,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .then(data => {
           if (data.profile) {
             const { name, email, phone, reference, avatar } = data.profile;
-            login({ name, email, phone, reference, avatar });
+            const userData = { name, email, phone, reference, avatar };
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
           }
           setLoading(false);
         })
@@ -72,12 +84,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .then(data => {
           if (data.profile) {
             const { name, email, phone, reference, avatar } = data.profile;
-            login({ name, email, phone, reference, avatar });
+            const userData = { name, email, phone, reference, avatar };
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
           }
+          setLoading(false);
         })
         .catch(console.error)
         .finally(() => {
-          setLoading(false);
           // remove token from URL
           const cleanUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, '', cleanUrl);
@@ -89,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    setForceUpdate(prev => prev + 1);
   };
 
   if (loading) {

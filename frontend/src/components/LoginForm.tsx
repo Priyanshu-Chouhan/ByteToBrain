@@ -24,25 +24,57 @@ const LoginForm: React.FC = () => {
     setLoading(true);
     setMessage(null);
     setError(null);
+    
     try {
+      console.log('Attempting login to:', `${BACKEND_URL}/api/users/login`);
       const res = await fetch(`${BACKEND_URL}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Backend server not running. Please start the backend server.');
+        }
+        try {
+          const data = await res.json();
+          setError(data.error || 'Login failed');
+          return;
+        } catch {
+          setError('Login failed');
+          return;
+        }
+      }
+      
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
+      console.log('Login response:', data);
+      
       if (data.token) {
         localStorage.setItem('token', data.token);
       }
+      
       if (data.user && login) {
-        login(data.user);
+        const userData = {
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.phone,
+          reference: data.user.reference,
+          avatar: data.user.avatar
+        };
+        console.log('Setting user data:', userData);
+        login(userData);
+        console.log('User data set, redirecting...');
+        
+        // Use router instead of window.location
         router.push('/');
         return;
       }
+      
       setForm({ email: '', password: '' });
     } catch (err: any) {
-      setError(err.message);
+      console.error('Login error:', err);
+      setError(err.message || 'Network error. Please check if backend server is running.');
     } finally {
       setLoading(false);
     }
@@ -51,6 +83,9 @@ const LoginForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto bg-[#18181b] p-8 rounded-2xl shadow-2xl border border-[#232326]">
       <h2 className="text-2xl font-bold mb-2 text-center text-white">Login</h2>
+      <div className="text-center text-sm text-[#A1A1A6] mb-4">
+        <p>Test Account: test@bytetobrain.in / password123</p>
+      </div>
       <div className="flex flex-col gap-2">
         <label htmlFor="email" className="text-white font-medium">Email</label>
         <input name="email" id="email" type="email" placeholder="Enter your email" value={form.email} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} required />
@@ -85,7 +120,13 @@ const LoginForm: React.FC = () => {
         type="button"
         className="flex items-center justify-center gap-2 border border-gray-300 rounded-full py-2 bg-white text-gray-800 hover:bg-gray-100 transition font-medium shadow"
         style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
-        onClick={() => { window.location.href = `${BACKEND_URL}/auth/google`; }}
+        onClick={() => {
+          try {
+            window.location.href = `${BACKEND_URL}/auth/google`;
+          } catch (err) {
+            setError('Google login unavailable. Please check if backend server is running.');
+          }
+        }}
       >
         <img src="/google.png" alt="Google" className="w-5 h-5" />
         Login with Google

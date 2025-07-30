@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useNavbarContext } from '../context/NavbarContext';
 
 const socialLinks = [
-  { href: 'https://mail.google.com/mail/?view=cm&fs=1&to=rachanasen1999@gmail.com', icon: '/gmail.png', label: 'Gmail' },
+  { href: 'https://mail.google.com/mail/?view=cm&fs=1&to=info@bytetobrain.in', icon: '/gmail.png', label: 'Gmail' },
   { href: 'https://www.linkedin.com/company/bytetobrain/?viewAsMember=true', icon: '/linkedin.png', label: 'LinkedIn' },
   { href: 'https://wa.me/918269028823', icon: '/whatsapp.png', label: 'WhatsApp' },
   { href: 'https://www.instagram.com/byte_to_brain?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==', icon: '/instagram.png', label: 'Instagram' },
@@ -20,9 +20,11 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/about-us', label: 'About' },
   { href: '/services/web-development', label: 'Services' },
-  { href: '/projects', label: 'Portfolio' },
+  { href: '/our-work', label: 'Our Work' },
+  { href: '/career', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
-  { href: '/careers', label: 'Careers' },
+  { href: '/login', label: 'Login' },
+  { href: '/signup', label: 'Sign Up' },
 ];
 const legalLinks = [
   { href: '/privacy-policy', label: 'Privacy Policy' },
@@ -65,8 +67,8 @@ const Footer: React.FC = () => {
               <span className="block">Madhya Pradesh, 462044</span>
             </span>
           </div>
-          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=rachanasen1999@gmail.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2997FF] hover:underline text-sm font-medium">
-            <img src="/gmail.png" alt="Gmail" className="w-5 h-5" /> rachanasen1999@gmail.com
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=info@bytetobrain.in" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2997FF] hover:underline text-sm font-medium">
+            <img src="/gmail.png" alt="Gmail" className="w-5 h-5" /> info@bytetobrain.in 
           </a>
           <a href="https://wa.me/918269028823" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#25D366] hover:underline text-sm font-medium">
             <img src="/whatsapp.png" alt="WhatsApp" className="w-5 h-5" /> +91 82690 28823
