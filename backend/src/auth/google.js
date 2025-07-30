@@ -10,13 +10,19 @@ passport.use(new GoogleStrategy({
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      let user = await User.findOne({ googleId: profile.id });
+      let user = await User.findOne({ 
+        $or: [{ googleId: profile.id }, { email: profile.emails[0].value }]
+      });
       if (!user) {
         user = await User.create({
           googleId: profile.id,
           name: profile.displayName,
-          email: profile.emails[0].value
+          email: profile.emails[0].value,
+          password: 'google-oauth'
         });
+      } else if (!user.googleId) {
+        user.googleId = profile.id;
+        await user.save();
       }
       return done(null, user);
     } catch (err) {

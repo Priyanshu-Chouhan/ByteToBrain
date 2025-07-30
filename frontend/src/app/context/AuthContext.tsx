@@ -26,38 +26,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const login = (userData: UserType) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
-
   useEffect(() => {
     const stored = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-    
-    if (stored) {
-      setUser(JSON.parse(stored));
-      setLoading(false);
-    } else if (token) {
-      // If we have token but no user, fetch profile
-      fetch(`${BACKEND_URL}/api/users/profile-details`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.profile) {
-            const { name, email, phone, reference, avatar } = data.profile;
-            login({ name, email, phone, reference, avatar });
-          }
-          setLoading(false);
-        })
-        .catch(err => {
-          console.error(err);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+    if (stored) setUser(JSON.parse(stored));
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -75,20 +47,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             login({ name, email, phone, reference, avatar });
           }
         })
-        .catch(console.error)
-        .finally(() => {
-          setLoading(false);
-          // remove token from URL
-          const cleanUrl = window.location.origin + window.location.pathname;
-          window.history.replaceState({}, '', cleanUrl);
-        });
+        .catch(console.error);
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
     }
   }, []);
+
+  const login = (userData: UserType) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
   };
 
   if (loading) {
@@ -114,4 +86,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

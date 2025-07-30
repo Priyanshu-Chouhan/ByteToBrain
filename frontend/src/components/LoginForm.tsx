@@ -32,27 +32,13 @@ const LoginForm: React.FC = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Login failed');
-      setMessage('Login successful!');
       if (data.token) {
         localStorage.setItem('token', data.token);
       }
       if (data.user && login) {
-        // Fetch latest profile for avatar
-        try {
-          const profileRes = await fetch(`${BACKEND_URL}/api/users/profile-details`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${data.token}` },
-          });
-          const profileData = await profileRes.json();
-          if (profileRes.ok && profileData.profile) {
-            login({ ...data.user, avatar: profileData.profile.avatar });
-          } else {
-            login(data.user);
-          }
-        } catch {
-          login(data.user);
-        }
+        login(data.user);
         router.push('/');
+        return;
       }
       setForm({ email: '', password: '' });
     } catch (err: any) {
@@ -65,9 +51,14 @@ const LoginForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto bg-[#18181b] p-8 rounded-2xl shadow-2xl border border-[#232326]">
       <h2 className="text-2xl font-bold mb-2 text-center text-white">Login</h2>
-      <input name="email" type="email" placeholder="Email or Phone" value={form.email} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" required />
-      <div className="relative">
-        <input name="password" type={showPassword ? 'text' : 'password'} placeholder="Password" value={form.password} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" required />
+      <div className="flex flex-col gap-2">
+        <label htmlFor="email" className="text-white font-medium">Email</label>
+        <input name="email" id="email" type="email" placeholder="Enter your email" value={form.email} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} required />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="password" className="text-white font-medium">Password</label>
+        <div className="relative">
+          <input name="password" id="password" type={showPassword ? 'text' : 'password'} placeholder="Enter your password" value={form.password} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} required />
         <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-3 cursor-pointer text-gray-400 focus:outline-none" tabIndex={-1} aria-label={showPassword ? 'Hide password' : 'Show password'}>
           {showPassword ? (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -80,6 +71,7 @@ const LoginForm: React.FC = () => {
             </svg>
           )}
         </button>
+        </div>
       </div>
       <div className="flex items-center justify-between text-sm">
         <label className="flex items-center gap-2 text-[#A1A1A6]">
@@ -93,7 +85,7 @@ const LoginForm: React.FC = () => {
         type="button"
         className="flex items-center justify-center gap-2 border border-gray-300 rounded-full py-2 bg-white text-gray-800 hover:bg-gray-100 transition font-medium shadow"
         style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
-        onClick={() => alert('Google login coming soon!')}
+        onClick={() => { window.location.href = `${BACKEND_URL}/auth/google`; }}
       >
         <img src="/google.png" alt="Google" className="w-5 h-5" />
         Login with Google

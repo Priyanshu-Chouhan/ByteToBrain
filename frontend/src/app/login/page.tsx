@@ -1,11 +1,18 @@
+"use client";
 import LoginForm from '../../components/LoginForm';
+import { useEffect } from 'react';
 
-export const metadata = {
-  title: "Login | ByteToBrain",
-  description: "Login to your ByteToBrain account to access exclusive features.",
-};
+function setPageTitle() {
+  if (typeof document !== 'undefined') {
+    document.title = "Login | ByteToBrain";
+  }
+}
 
 export default function Login() {
+  useEffect(() => {
+    setPageTitle();
+  }, []);
+
   return (
     <div className="max-w-lg mx-auto p-8">
       <LoginForm />

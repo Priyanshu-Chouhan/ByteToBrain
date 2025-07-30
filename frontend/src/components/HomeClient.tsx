@@ -227,7 +227,7 @@ export default function HomeClient() {
       {/* Our Services Section */}
       <section id="services" className="w-full bg-[#18181b] py-16 flex flex-col items-center overflow-y-visible">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-10">Our Services</h2>
-        <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 z-20 mt-12">
+        <div className="w-full max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 z-20 mt-12 px-4">
           {services.map((s, i) =>
             <motion.div
               key={s.title + '-border'}
@@ -242,21 +242,25 @@ export default function HomeClient() {
                 duration: 0.15
               }}
               viewport={{ once: true }}
-              className="relative z-10 p-[2px] rounded-xl bg-gradient-to-r from-[#2997FF] via-[#A259FF] to-[#FF6F91] overflow-hidden"
+              className="relative z-10 p-[2px] rounded-xl bg-gradient-to-r from-[#2997FF] via-[#A259FF] to-[#FF6F91] overflow-hidden h-[280px] sm:h-[320px] md:h-[280px]"
             >
               <div
-                className="flex flex-col justify-between items-center text-center h-full bg-[#18181b] rounded-xl hover:bg-[#1e293b] active:bg-[#18181b] transition-colors cursor-pointer py-3"
+                className="flex flex-col items-center text-center h-full bg-[#18181b] rounded-xl hover:bg-[#1e293b] active:bg-[#18181b] transition-colors cursor-pointer py-3 px-3"
                 style={{ boxShadow: 'none', border: 'none' }}
               >
-                <div className="mt-0 mb-0 h-14 flex items-center justify-center">{s.icon}</div>
-                <div className="flex-1 flex flex-col justify-between w-full">
-                  <h3 className="text-lg font-bold text-white mb-2">{s.title}</h3>
-                  <p className="text-[#A1A1A6] mb-2">{s.desc}</p>
-                  <ul className="text-xs text-[#2997FF] space-y-1 mb-2">
+                <div className="h-12 flex items-center justify-center mb-1">{s.icon}</div>
+                <div className="flex-1 flex flex-col justify-between w-full px-1">
+                  <div>
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-1 leading-tight">{s.title}</h3>
+                    <p className="text-xs sm:text-sm text-[#A1A1A6] mb-1 leading-relaxed">{s.desc}</p>
+                  </div>
+                  <ul className="text-xs text-[#2997FF] space-y-1 mb-1">
                     {s.features.map(f => <li key={f}>• {f}</li>)}
                   </ul>
                 </div>
-                <a href={s.link} className="mt-2 px-6 py-2 bg-gradient-to-r from-[#2997FF] via-[#A259FF] to-[#FF6F91] text-white rounded-full font-semibold shadow hover:scale-105 transition text-sm mb-2">Learn more</a>
+                <div className="w-full px-1 pb-1">
+                  <a href={s.link} className="inline-block px-3 sm:px-4 py-1.5 bg-gradient-to-r from-[#2997FF] via-[#A259FF] to-[#FF6F91] text-white rounded-full font-semibold shadow hover:scale-105 transition text-xs sm:text-sm">Learn more</a>
+                </div>
               </div>
             </motion.div>
           )}
@@ -266,25 +270,31 @@ export default function HomeClient() {
       <section className="w-full bg-[#18181b] py-16 flex flex-col items-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none select-none" style={{background: "url('/pattern.svg') repeat"}}></div>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-10 relative z-10">What Makes Us Different?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-6xl relative z-10 px-4 md:px-8">
           {[
             {
-              icon: <img src="/flash.png" alt="Fast Delivery" className="w-14 h-14 mb-4 mt-2" />,
+              icon: <img src="/flash.png" alt="Fast Delivery" className="w-12 h-12 sm:w-14 sm:h-14 mb-4 mt-2" />,
               title: "Superfast Project Delivery",
               desc: "Get your website or app live in record time—without compromising on quality.",
               color: "from-[#2997FF] via-[#A259FF] to-[#FF6F91]"
             },
             {
-              icon: <img src="/paint-palette.png" alt="Modern Design" className="w-14 h-14 mb-4 mt-2" />,
+              icon: <img src="/paint-palette.png" alt="Modern Design" className="w-12 h-12 sm:w-14 sm:h-14 mb-4 mt-2" />,
               title: "Creative & Modern Design",
               desc: "Eye-catching, user-friendly interfaces that make your brand stand out.",
               color: "from-[#A259FF] via-[#2997FF] to-[#FF6F91]"
             },
             {
-              icon: <img src="/lock.png" alt="Secure & Scalable" className="w-14 h-14 mb-4 mt-2" />,
+              icon: <img src="/lock.png" alt="Secure & Scalable" className="w-12 h-12 sm:w-14 sm:h-14 mb-4 mt-2" />,
               title: "Secure & Future-Ready",
               desc: "Built with best practices for security and easy growth as your business expands.",
               color: "from-[#FF6F91] via-[#2997FF] to-[#A259FF]"
+            },
+            {
+              icon: <img src="/customer (2).png" alt="24/7 Support" className="w-12 h-12 sm:w-14 sm:h-14 mb-4 mt-2" />,
+              title: "24/7 Customer Support",
+              desc: "Always here to help you with any questions or issues. Your success is our priority.",
+              color: "from-[#2997FF] via-[#FF6F91] to-[#A259FF]"
             }
           ].map((card, i) => (
             <motion.div
@@ -293,13 +303,13 @@ export default function HomeClient() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.15, duration: 0.7, type: "spring" }}
               viewport={{ once: true }}
-              className={`relative group bg-[#232326]/80 backdrop-blur-md rounded-xl p-8 shadow-xl flex flex-col items-center text-center transition-transform duration-200 hover:scale-105 hover:shadow-2xl border-2 border-transparent hover:border-[#2997FF]`}
+              className={`relative group bg-[#232326]/80 backdrop-blur-md rounded-xl p-4 sm:p-6 md:p-8 shadow-xl flex flex-col items-center text-center transition-transform duration-200 hover:scale-105 hover:shadow-2xl border-2 border-transparent hover:border-[#2997FF] min-h-[280px] sm:min-h-[320px] md:min-h-[280px]`}
               style={{ boxShadow: "0 8px 32px 0 rgba(41,151,255,0.10)" }}
             >
               <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r ${card.color} rounded-full group-hover:w-24 transition-all duration-300`} />
               <span className="group-hover:animate-bounce transition-all duration-200">{card.icon}</span>
-              <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
-              <p className="text-[#A1A1A6]">{card.desc}</p>
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-2">{card.title}</h3>
+              <p className="text-xs sm:text-sm text-[#A1A1A6] flex-1 flex items-center">{card.desc}</p>
             </motion.div>
           ))}
         </div>

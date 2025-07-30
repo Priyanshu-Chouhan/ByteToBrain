@@ -106,14 +106,25 @@ const SignupForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-lg mx-auto bg-[#18181b] p-8 rounded-2xl shadow-2xl border border-[#232326]">
       <h2 className="text-2xl font-bold mb-2 text-center text-white">Sign Up</h2>
-      <input name="name" type="text" placeholder="Full Name" value={form.name} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" />
-      {fieldErrors.name && <div className="text-red-500 text-sm">{fieldErrors.name}</div>}
-      <input name="email" type="email" placeholder="Email Address" value={form.email} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" />
-      {fieldErrors.email && <div className="text-red-500 text-sm">{fieldErrors.email}</div>}
-      <input name="phone" type="tel" placeholder="Phone Number" value={form.phone} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" />
-      {fieldErrors.phone && <div className="text-red-500 text-sm">{fieldErrors.phone}</div>}
-      <div className="relative">
-        <input name="password" type={showPassword ? 'text' : 'password'} placeholder="Password" value={form.password} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" />
+      <div className="flex flex-col gap-2">
+        <label htmlFor="name" className="text-white font-medium">Full Name</label>
+        <input name="name" id="name" type="text" placeholder="Enter your full name" value={form.name} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} />
+        {fieldErrors.name && <div className="text-red-500 text-sm">{fieldErrors.name}</div>}
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="email" className="text-white font-medium">Email</label>
+        <input name="email" id="email" type="email" placeholder="Enter your email" value={form.email} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} />
+        {fieldErrors.email && <div className="text-red-500 text-sm">{fieldErrors.email}</div>}
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="phone" className="text-white font-medium">Phone</label>
+        <input name="phone" id="phone" type="tel" placeholder="Enter your phone number" value={form.phone} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} />
+        {fieldErrors.phone && <div className="text-red-500 text-sm">{fieldErrors.phone}</div>}
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="password" className="text-white font-medium">Password</label>
+        <div className="relative">
+          <input name="password" id="password" type={showPassword ? 'text' : 'password'} placeholder="Create a password" value={form.password} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} />
         <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-3 cursor-pointer text-gray-400 focus:outline-none" tabIndex={-1} aria-label={showPassword ? 'Hide password' : 'Show password'}>
           {showPassword ? (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -126,27 +137,30 @@ const SignupForm: React.FC = () => {
             </svg>
           )}
         </button>
+        </div>
+        <ul className="text-xs mb-1 grid grid-cols-2 gap-x-6 gap-y-1">
+          <li className={hasMinLength ? 'text-green-400' : 'text-red-400'}>
+            {hasMinLength ? '✔️' : '❌'} At least 8 characters
+          </li>
+          <li className={hasUpper ? 'text-green-400' : 'text-red-400'}>
+            {hasUpper ? '✔️' : '❌'} At least one uppercase letter
+          </li>
+          <li className={hasLower ? 'text-green-400' : 'text-red-400'}>
+            {hasLower ? '✔️' : '❌'} At least one lowercase letter
+          </li>
+          <li className={hasNumber ? 'text-green-400' : 'text-red-400'}>
+            {hasNumber ? '✔️' : '❌'} At least one number
+          </li>
+          <li className={(hasSpecial ? 'text-green-400' : 'text-red-400') + ' whitespace-nowrap'}>
+            {hasSpecial ? '✔️' : '❌'} At least one special character <span className="whitespace-nowrap">(e.g. !@#$%^&*)</span>
+          </li>
+        </ul>
+        {fieldErrors.password && <div className="text-red-500 text-sm">{fieldErrors.password}</div>}
       </div>
-      <ul className="text-xs mb-1 grid grid-cols-2 gap-x-6 gap-y-1">
-        <li className={hasMinLength ? 'text-green-400' : 'text-red-400'}>
-          {hasMinLength ? '✔️' : '❌'} At least 8 characters
-        </li>
-        <li className={hasUpper ? 'text-green-400' : 'text-red-400'}>
-          {hasUpper ? '✔️' : '❌'} At least one uppercase letter
-        </li>
-        <li className={hasLower ? 'text-green-400' : 'text-red-400'}>
-          {hasLower ? '✔️' : '❌'} At least one lowercase letter
-        </li>
-        <li className={hasNumber ? 'text-green-400' : 'text-red-400'}>
-          {hasNumber ? '✔️' : '❌'} At least one number
-        </li>
-        <li className={(hasSpecial ? 'text-green-400' : 'text-red-400') + ' whitespace-nowrap'}>
-          {hasSpecial ? '✔️' : '❌'} At least one special character <span className="whitespace-nowrap">(e.g. !@#$%^&*)</span>
-        </li>
-      </ul>
-      {fieldErrors.password && <div className="text-red-500 text-sm">{fieldErrors.password}</div>}
-      <div className="relative">
-        <input name="confirmPassword" type={showConfirm ? 'text' : 'password'} placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" />
+      <div className="flex flex-col gap-2">
+        <label htmlFor="confirmPassword" className="text-white font-medium">Confirm Password</label>
+        <div className="relative">
+          <input name="confirmPassword" id="confirmPassword" type={showConfirm ? 'text' : 'password'} placeholder="Confirm your password" value={form.confirmPassword} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} />
         <button type="button" onClick={() => setShowConfirm((v) => !v)} className="absolute right-3 top-3 cursor-pointer text-gray-400 focus:outline-none" tabIndex={-1} aria-label={showConfirm ? 'Hide password' : 'Show password'}>
           {showConfirm ? (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -159,8 +173,9 @@ const SignupForm: React.FC = () => {
             </svg>
           )}
         </button>
+        </div>
+        {fieldErrors.confirmPassword && <div className="text-red-500 text-sm">{fieldErrors.confirmPassword}</div>}
       </div>
-      {fieldErrors.confirmPassword && <div className="text-red-500 text-sm">{fieldErrors.confirmPassword}</div>}
       <div>
         <label className="block mb-1 text-white">How did you hear about us?</label>
         <select name="hear" value={form.hear} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]">
@@ -168,7 +183,7 @@ const SignupForm: React.FC = () => {
           {hearOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
         </select>
         {form.hear === 'Other' && (
-          <input name="hearOther" type="text" placeholder="Please specify" value={form.hearOther} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded mt-2 w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" />
+          <input name="hearOther" type="text" placeholder="Please specify" value={form.hearOther} onChange={handleChange} className="border border-[#232326] bg-[#232326] text-white p-3 rounded mt-2 w-full focus:outline-none focus:ring-2 focus:ring-[#2997FF]" style={{WebkitBoxShadow: '0 0 0 1000px #232326 inset', WebkitTextFillColor: 'white'}} />
         )}
         {fieldErrors.hear && <div className="text-red-500 text-sm">{fieldErrors.hear}</div>}
         {fieldErrors.hearOther && <div className="text-red-500 text-sm">{fieldErrors.hearOther}</div>}

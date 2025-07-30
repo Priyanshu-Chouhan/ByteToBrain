@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const session = require('express-session');
 require('./auth/google');
 
@@ -39,8 +40,13 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    // Successful authentication, redirect to frontend or send token
-    res.redirect('http://localhost:3000');
+    const user = req.user;
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
   }
 );
 

@@ -22,7 +22,6 @@ const navLinks = [
   { href: '/services/web-development', label: 'Services' },
   { href: '/projects', label: 'Portfolio' },
   { href: '/contact', label: 'Contact' },
-  { href: '/faqs', label: 'FAQs' },
   { href: '/careers', label: 'Careers' },
 ];
 const legalLinks = [

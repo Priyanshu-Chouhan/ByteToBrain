@@ -17,12 +17,13 @@ const Navbar: React.FC = () => {
   // const [servicesOpen, setServicesOpen] = useState(false);
   // const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const { openServices, setOpenServices } = useNavbarContext();
+  const [openServices, setOpenServices] = useState(false);
   const auth = useAuth();
   const user = auth?.user;
   const logout = auth?.logout;
   const [showProfile, setShowProfile] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
   const [editMode, setEditMode] = useState(false);
   const [editName, setEditName] = useState(user?.name || "");
   const [editPhone, setEditPhone] = useState(user?.phone || "");
@@ -169,6 +170,10 @@ const Navbar: React.FC = () => {
       if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
         setShowProfile(false);
       }
+      if (servicesRef.current && !servicesRef.current.contains(event.target as Node)) {
+        setOpenServices(false);
+        setActiveSubmenu(null);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -213,9 +218,7 @@ const Navbar: React.FC = () => {
       <div className="hidden md:flex items-center gap-2 h-full">
         <Link href="/" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">Home</Link>
         <Link href="/about-us" className="flex items-center h-12 px-3 text-[#A1A1A6] hover:text-[#2997FF] font-medium transition-colors duration-200">About Us</Link>
-        <div className="relative flex items-center h-12 px-3"
-          onMouseEnter={() => { setOpenServices(true); setActiveSubmenu(null); }}
-          onMouseLeave={() => { setOpenServices(false); setActiveSubmenu(null); }}>
+        <div className="relative flex items-center h-12 px-3" ref={servicesRef}>
           <button
             className="text-[#A1A1A6] hover:text-[#2997FF] font-medium flex items-center gap-1 transition-colors duration-200 h-full"
             onClick={() => setOpenServices(!openServices)}
@@ -229,8 +232,6 @@ const Navbar: React.FC = () => {
                 <div
                   key={cat.key}
                   className="group relative"
-                  onMouseEnter={() => setActiveSubmenu(cat.key)}
-                  onMouseLeave={() => setActiveSubmenu(null)}
                 >
                   <button
                     className="w-full text-left px-4 py-2 text-[#A1A1A6] hover:bg-[#1D1D1F] hover:text-[#2997FF] font-semibold uppercase text-xs tracking-wider flex items-center justify-between transition-colors duration-200"
@@ -401,12 +402,12 @@ const Navbar: React.FC = () => {
       )}
       {/* Mobile menu */}
       <button className="md:hidden p-2 text-[#F5F5F7]" onClick={() => setMenuOpen(!menuOpen)}>
-        <span className="text-2xl">☰</span>
+        <span className="text-2xl">{menuOpen ? '✕' : '☰'}</span>
       </button>
       {menuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-[#1D1D1F] shadow-lg flex flex-col gap-2 p-4 md:hidden z-50 border-b border-[#232326]">
-          <Link href="/" className="hover:text-[#2997FF]" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link href="/about-us" className="hover:text-[#2997FF]" onClick={() => setMenuOpen(false)}>About Us</Link>
+        <div className="absolute top-16 left-0 w-full bg-[#1D1D1F] shadow-lg flex flex-col gap-3 p-4 pl-8 md:hidden z-50 border-b border-[#232326]">
+          <Link href="/" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link href="/about-us" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>About Us</Link>
           <div>
             <button
               className="hover:text-[#2997FF] flex items-center gap-1 w-full text-left"
@@ -448,10 +449,12 @@ const Navbar: React.FC = () => {
             )}
           </div>
           {/* Removed Training dropdown in mobile menu */}
-          <Link href="/projects" className="hover:text-[#2997FF]" onClick={() => setMenuOpen(false)}>Projects</Link>
-          <Link href="/testimonials" className="hover:text-[#2997FF]" onClick={() => setMenuOpen(false)}>Testimonials</Link>
-          <Link href="/career" className="hover:text-[#2997FF]" onClick={() => setMenuOpen(false)}>Career</Link>
-          <Link href="/login" className="hover:text-[#2997FF]" onClick={() => setMenuOpen(false)}>Login</Link>
+          <Link href="/projects" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Projects</Link>
+          <Link href="/testimonials" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Testimonials</Link>
+          <Link href="/career" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Career</Link>
+          <Link href="/login" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Login</Link>
+          <Link href="/signup" className="hover:text-[#2997FF] py-1" onClick={() => setMenuOpen(false)}>Sign Up</Link>
+          <Link href="/contact" className="mt-2 w-fit px-6 py-2 bg-[#2997FF] text-white rounded-full font-semibold shadow-lg hover:bg-[#0071E3] transition-all duration-200 border border-[#2997FF] hover:border-[#0071E3]" onClick={() => setMenuOpen(false)}>Contact Us</Link>
         </div>
       )}
     </nav>
